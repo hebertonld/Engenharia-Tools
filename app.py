@@ -1,24 +1,30 @@
 import streamlit as st
 
+from core.config import AppConfig
+from components.header import render_header
+from components.footer import render_footer
+
+
 st.set_page_config(
-    page_title="Engenharia Tools",
-    page_icon="🛠️",
-    layout="wide"
+    page_title=AppConfig.APP_NAME,
+    page_icon=AppConfig.PAGE_ICON,
+    layout=AppConfig.LAYOUT
 )
 
-st.title("🛠️ Engenharia Tools")
+with st.sidebar:
 
-st.markdown("""
-Bem-vindo ao portal de ferramentas de engenharia.
+    st.title("🛠️ Engenharia Tools")
 
-### Áreas previstas
+    st.caption("Portal de Engenharia")
 
-- Drenagem Pluvial
-- Hidráulica
-- Saneamento
-- Infraestrutura Urbana
-- BIM e Revit
-- Automações de Engenharia
+    st.divider()
 
-As ferramentas serão adicionadas gradualmente.
-""")
+    st.success("Sistema operacional")
+
+render_header()
+
+st.info(
+    "Selecione um módulo no menu lateral."
+)
+
+render_footer()
