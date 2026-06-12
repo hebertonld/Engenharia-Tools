@@ -1,59 +1,113 @@
 import streamlit as st
+from components.profile import render_profile_image
 
-from components.cards import render_module_card
+st.set_page_config(layout="wide")
 
+# =====================================================
+# HERO
+# =====================================================
 
-st.title("🏠 Engenharia Tools")
+col_logo, col_texto = st.columns([1, 2])
+
+with col_logo:
+    st.image(
+        "assets/logo/logo-transparente.png",
+        width=250
+    )
+
+with col_texto:
+
+    st.title("Heberton Damaceno")
+
+    st.subheader("Engenheiro Civil")
+
+    st.markdown(
+        """
+        **Especialidades**
+
+        - Drenagem Urbana e Pluvial
+        - Saneamento
+        - Hidráulica
+        - Infraestrutura
+        - BIM e Automação
+        """
+    )
+
+st.divider()
+
+st.subheader("Portal de Ferramentas para Engenharia")
 
 st.markdown(
     """
-    Plataforma de aplicações para engenharia.
+    Plataforma desenvolvida para concentrar aplicações
+    de engenharia voltadas para drenagem, hidráulica,
+    saneamento, infraestrutura urbana e automação.
 
-    ---
+    As ferramentas são desenvolvidas com foco em
+    produtividade, rastreabilidade de cálculos e
+    aplicação prática em projetos reais.
     """
 )
-
-st.subheader("Módulos")
 
 col1, col2 = st.columns(2)
 
 with col1:
 
-    render_module_card(
-        "🌧️ Drenagem",
-        "Galerias, bueiros, método racional, reservação."
-    )
-
-    render_module_card(
-        "💧 Hidráulica",
-        "Perda de carga, redes pressurizadas e bombeamento."
+    st.page_link(
+        "pages/10_Ferramentas.py",
+        label="Acessar Ferramentas",
+        icon="🛠️"
     )
 
 with col2:
 
-    render_module_card(
-        "🚰 Saneamento",
-        "Abastecimento de água e esgotamento sanitário."
-    )
-
-    render_module_card(
-        "🏗️ BIM",
-        "Ferramentas para Revit, Dynamo e automações."
+    st.page_link(
+        "pages/03_Portfolio.py",
+        label="Portfólio",
+        icon="📁"
     )
 
 st.divider()
 
-st.subheader("Roadmap")
+st.divider()
 
-roadmap = [
-    "Método Racional",
-    "Perda de Carga",
-    "Dimensionamento de Galerias",
-    "Método de Rippl",
-    "Bueiros",
-    "Ferramentas BIM"
-]
+# =====================================================
+# ÁREAS DE ATUAÇÃO
+# =====================================================
 
-for item in roadmap:
+st.subheader("Áreas de Atuação")
 
-    st.checkbox(item, value=False, disabled=True)
+c1, c2, c3, c4 = st.columns(4)
+
+with c1:
+    st.info("🌧️ Drenagem")
+
+with c2:
+    st.info("💧 Hidráulica")
+
+with c3:
+    st.info("🚰 Saneamento")
+
+with c4:
+    st.info("🏗️ BIM")
+
+st.divider()
+
+# =====================================================
+# FERRAMENTAS
+# =====================================================
+
+st.subheader("Ferramentas em Desenvolvimento")
+
+st.markdown(
+    """
+    - Método Racional
+    - Método de Rippl
+    - Galerias Pluviais
+    - Bueiros
+    - Perda de Carga
+    - Redes Pressurizadas
+    """
+)
+
+st.caption("Versão 0.2.0")

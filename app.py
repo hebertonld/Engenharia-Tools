@@ -13,13 +13,17 @@ st.set_page_config(
 
 with st.sidebar:
 
-    st.title("🛠️ Engenharia Tools")
+    st.title("👷 Portal Profissional")
 
-    st.caption("Portal de Engenharia")
+    st.caption(
+        "Engenharia Civil • BIM • Automação"
+    )
 
     st.divider()
 
-    st.success("Sistema operacional")
+    st.success(
+        "Versão 0.2.0"
+    )
 
 render_header()
 
