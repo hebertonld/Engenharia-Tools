@@ -2,24 +2,23 @@
 Base Técnica de Tubulações
 
 Projeto:
-    Engenharia Tools
+Engenharia Tools
 
 Objetivo:
-    Centralizar propriedades hidráulicas dos materiais
-    utilizados pelas ferramentas da plataforma.
+Centralizar propriedades hidráulicas dos materiais
+utilizados pelas ferramentas da plataforma.
 
 Referências:
-    ABNT NBR 5626
-    ABNT NBR 5648
-    ABNT NBR 12218
-    ABNT NBR 12266
-    Catálogos Tigre
-    Catálogos Amanco
-    Saint-Gobain PAM
+ABNT NBR 5626
+ABNT NBR 5648
+ABNT NBR 12218
+ABNT NBR 12266
+Catálogos Tigre
+Catálogos Amanco
+Saint-Gobain PAM
 """
 
 from math import pi
-
 
 # =====================================================
 # FUNÇÕES AUXILIARES
@@ -56,6 +55,12 @@ def criar_diametro(
             diametro_interno_mm
         )
     }
+
+
+# =====================================================
+# BASE TÉCNICA
+# =====================================================
+
 MATERIAIS = {
 
     "PVC SOLDAVEL": {
@@ -107,7 +112,8 @@ MATERIAIS = {
 
         ]
     },
-     "PPR PN12": {
+
+    "PPR PN12": {
 
         "norma": "ABNT NBR 15813",
 
@@ -150,7 +156,7 @@ MATERIAIS = {
             criar_diametro(63, 45.8),
             criar_diametro(75, 54.4),
             criar_diametro(90, 65.4),
-            criar_diametro(110, 79.8)
+            criar_diametro(110, 69.8)
 
         ]
     },
@@ -179,7 +185,8 @@ MATERIAIS = {
 
         ]
     },
-        "ACO NBR 5580": {
+
+    "ACO NBR 5580": {
 
         "norma": "ABNT NBR 5580",
 
@@ -205,16 +212,16 @@ MATERIAIS = {
             criar_diametro("6", 165.1)
 
         ]
-    },
+    }
+
 }
+
+
 # =====================================================
 # CONSULTAS
 # =====================================================
 
 def obter_materiais():
-    """
-    Retorna lista de materiais.
-    """
 
     return sorted(
         list(MATERIAIS.keys())
@@ -222,9 +229,6 @@ def obter_materiais():
 
 
 def obter_diametros(material):
-    """
-    Retorna DNs disponíveis.
-    """
 
     return [
 
@@ -240,9 +244,6 @@ def obter_propriedades(
     material,
     dn
 ):
-    """
-    Retorna propriedades hidráulicas.
-    """
 
     for item in MATERIAIS[
         material
@@ -259,6 +260,11 @@ def obter_propriedades(
                     "coef_hazen"
                 ],
 
+                "coef_fwh":
+                MATERIAIS[material][
+                    "coef_fwh"
+                ],
+
                 "rugosidade_mm":
                 MATERIAIS[material][
                     "rugosidade_mm"
@@ -270,4 +276,60 @@ def obter_propriedades(
 
     raise ValueError(
         f"DN {dn} não encontrado."
+    )
+
+
+def obter_tubulacoes():
+
+    tubulacoes = []
+
+    for material, dados in MATERIAIS.items():
+
+        for diametro in dados["diametros"]:
+
+            tubulacoes.append(
+
+                f"{material} DN{diametro['dn']}"
+
+            )
+
+    return sorted(tubulacoes)
+
+
+def decompor_tubulacao(
+    descricao
+):
+
+    partes = descricao.split(
+        " DN"
+    )
+
+    material = partes[0]
+
+    dn = partes[1]
+
+    try:
+
+        dn = int(dn)
+
+    except ValueError:
+
+        pass
+
+    return material, dn
+
+
+def obter_propriedades_tubulacao(
+    descricao
+):
+
+    material, dn = (
+        decompor_tubulacao(
+            descricao
+        )
+    )
+
+    return obter_propriedades(
+        material,
+        dn
     )
