@@ -19,7 +19,8 @@ from biblioteca.hidraulica import (
     calcular_j_hazen_williams,
     calcular_perda_linear,
     calcular_perda_singular,
-    calcular_perda_total
+    calcular_perda_total,
+    propagar_pressao_rede_serie
 )
 
 from biblioteca.consumo_maximo_provavel import (
@@ -33,8 +34,6 @@ def processar_tabela(
 ):
 
     resultados = []
-
-    pressao_montante = None
 
     for indice, linha in df.iterrows():
 
@@ -209,24 +208,6 @@ def processar_tabela(
             )
 
             # -------------------------
-            # Pressões
-            # -------------------------
-
-            if indice == 0:
-
-                pressao_montante = (
-                    linha[
-                        "Pressão Disponível"
-                    ]
-                )
-
-            pressao_jusante = (
-                pressao_montante
-                -
-                perda_total
-            )
-
-            # -------------------------
             # Resultado
             # -------------------------
 
@@ -270,22 +251,8 @@ def processar_tabela(
                 perda_singular,
 
                 "Perda Total":
-                perda_total,
-
-                "Pressão Montante":
-                pressao_montante,
-
-                "Pressão Jusante":
-                pressao_jusante
+                perda_total
             })
-
-            # -------------------------
-            # Encadeamento
-            # -------------------------
-
-            pressao_montante = (
-                pressao_jusante
-            )
 
         except Exception as erro:
 
@@ -296,6 +263,82 @@ def processar_tabela(
                 "Erro":
                 str(erro)
             })
+
+    # -------------------------
+    # Propagação de pressões
+    # -------------------------
+
+    if len(resultados) > 0:
+
+        indices_validos = []
+
+        propagacao_interrompida = False
+
+        for indice, resultado in enumerate(
+            resultados
+        ):
+
+            if "Erro" in resultado:
+
+                propagacao_interrompida = True
+                continue
+
+            if propagacao_interrompida:
+
+                resultado[
+                    "Erro Pressão"
+                ] = (
+                    "Propagação interrompida por "
+                    "erro em trecho anterior."
+                )
+
+                continue
+
+            indices_validos.append(
+                indice
+            )
+
+        trechos_validos = [
+            resultados[indice]
+            for indice in indices_validos
+        ]
+
+        if len(trechos_validos) > 0:
+
+            try:
+
+                if "Pressão Disponível" not in df.columns:
+                    raise ValueError(
+                        "Coluna Pressão Disponível não encontrada."
+                    )
+
+                pressao_inicial = (
+                    df.iloc[0][
+                        "Pressão Disponível"
+                    ]
+                )
+
+                trechos_propagados = (
+                    propagar_pressao_rede_serie(
+                        trechos_validos,
+                        pressao_inicial
+                    )
+                )
+
+                for indice, trecho in zip(
+                    indices_validos,
+                    trechos_propagados
+                ):
+
+                    resultados[indice] = trecho
+
+            except Exception as erro:
+
+                for indice in indices_validos:
+
+                    resultados[indice][
+                        "Erro Pressão"
+                    ] = str(erro)
 
     return pd.DataFrame(
         resultados

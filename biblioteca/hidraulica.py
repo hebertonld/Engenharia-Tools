@@ -382,3 +382,102 @@ def calcular_pressao_jusante(
         perda_total
 
     )
+
+
+def propagar_pressao_rede_serie(
+    trechos,
+    pressao_inicial
+):
+    """
+    Propaga pressoes trecho a trecho
+    em uma rede em serie.
+
+    Premissas:
+        - trechos ja ordenados
+        - sem malhas
+        - sem aneis
+
+    Campos esperados em cada trecho:
+        No Montante
+        No Jusante
+        Perda Total
+
+    Retorno:
+        lista de trechos com:
+            Trecho
+            Pressao Montante
+            Pressao Jusante
+    """
+
+    if (
+        pressao_inicial is None
+        or
+        pressao_inicial != pressao_inicial
+    ):
+        raise ValueError(
+            "Pressao inicial nao informada."
+        )
+
+    resultados = []
+
+    pressao_montante = pressao_inicial
+    no_jusante_anterior = None
+
+    for indice, trecho in enumerate(trechos):
+
+        no_montante = trecho[
+            "Nó Montante"
+        ]
+
+        no_jusante = trecho[
+            "Nó Jusante"
+        ]
+
+        if (
+            indice > 0
+            and
+            no_montante != no_jusante_anterior
+        ):
+            raise ValueError(
+                "Rede em serie descontinua: "
+                f"o no jusante anterior ({no_jusante_anterior}) "
+                f"deve ser igual ao no montante atual ({no_montante})."
+            )
+
+        perda_total = trecho[
+            "Perda Total"
+        ]
+
+        pressao_jusante = (
+            calcular_pressao_jusante(
+                pressao_montante,
+                perda_total
+            )
+        )
+
+        resultado = {
+            **trecho,
+
+            "Trecho":
+            f"{no_montante}-{no_jusante}",
+
+            "Pressão Montante":
+            pressao_montante,
+
+            "Pressão Jusante":
+            pressao_jusante
+        }
+
+        resultados.append(
+            resultado
+        )
+
+        pressao_montante = (
+            pressao_jusante
+        )
+
+        no_jusante_anterior = (
+            no_jusante
+        )
+
+    return resultados
